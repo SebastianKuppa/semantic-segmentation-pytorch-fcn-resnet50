@@ -38,6 +38,12 @@ def get_segmentation_labels(image, model, device):
 
 
 def draw_segmentation_map(outputs):
+    """
+    creates a colorized segmentation map for all detected objects in the image (which is provided
+    by the 'outputs' tensor).
+    :param outputs: resulting tensor from processing an image in the FCN model
+    :return: segmented image for all labels in label_map
+    """
     labels = torch.argmax(outputs.squeeze(), dim=0).detach().cpu().numpy()
 
     red_map = np.zeros_like(labels).astype(np.uint8)
@@ -55,6 +61,12 @@ def draw_segmentation_map(outputs):
 
 
 def image_overlay(image, segmented_image):
+    """
+    colorizes the original input image with the color values from segmentation map
+    :param image: original input image
+    :param segmented_image: colorized image with detection results from the FCN model
+    :return: colorized input image
+    """
     alpha = .6  # transparency param
     beta = 1 - alpha  # the sum of alpha and beta must equal to 1
     gamma = 0  # scalar for each sum
