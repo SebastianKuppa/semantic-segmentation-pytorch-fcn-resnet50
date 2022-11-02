@@ -37,3 +37,15 @@ def get_segmentation_labels(image, model, device):
     return outputs
 
 
+def draw_segmentation_map(outputs):
+    labels = torch.argmax(outputs.squeeze(), dim=0).detach().cpu().numpy()
+
+    red_map = np.zeros_like(labels).astype(np.uint8)
+    green_map = np.zeros_like(labels).astype(np.uint8)
+    blue_map = np.zeros_like(labels).astype(np.uint8)
+
+    for label_num in range(0, len(label_map)):
+        index = labels == label_num
+        red_map[index] = np.array(label_map)[label_num, 0]
+        green_map[index] = np.array(label_map)[label_num, 1]
+        blue_map[index] = np.array(label_map)[label_num, 2]
