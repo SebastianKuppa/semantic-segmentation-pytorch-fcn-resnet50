@@ -49,3 +49,19 @@ def draw_segmentation_map(outputs):
         red_map[index] = np.array(label_map)[label_num, 0]
         green_map[index] = np.array(label_map)[label_num, 1]
         blue_map[index] = np.array(label_map)[label_num, 2]
+
+    segmented_image = np.stack([red_map, green_map, blue_map], axis=2)
+    return segmented_image
+
+
+def image_overlay(image, segmented_image):
+    alpha = .6  # transparency param
+    beta = 1 - alpha  # the sum of alpha and beta must equal to 1
+    gamma = 0  # scalar for each sum
+
+    image = np.array(image)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    segmented_image = cv2.cvtColor(segmented_image, cv2.COLOR_RGB2BGR)
+    cv2.addWeighted(segmented_image, alpha, image, beta, gamma, image)
+    return image
+
