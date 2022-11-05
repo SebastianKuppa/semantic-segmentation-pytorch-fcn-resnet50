@@ -43,3 +43,39 @@ total_fps = 0
 while cap.isOpened():
     # get single frame from video
     ret, frame = cap.read()
+    if ret:
+        # get start time
+        start_time = time.time()
+        with torch.no_grad():
+            # get result for current frame
+            outputs = segmentation_utils.get_segmentation_labels(frame, model, device)
+        # process frame from video
+        segmented_image = segmentation_utils.draw_segmentation_map(outputs['out'])
+        final_image = segmentation_utils.image_overlay(frame, segmented_image)
+
+        # get end time
+        end_time = time.time()
+        # get fps
+        fps = 1 / (end_time - start_time)
+        # add fps to total fps
+        total_fps += fps
+        # increment frame_count
+        frame_count += 1
+
+        # press 'q' on keyboard to exit
+        wait_time = max(1, int(fps/4))
+        cv2.imshow('image', final_image)
+        out.write(final_image)
+        if cv2.waitKey(wait_time) and 0xFF == ord('q'):
+            break
+    else:
+        break
+
+# release VideoCapture
+cap.release()
+# close all openCV videos
+cv2.destroyAllWindows()
+
+# calc avg fps
+avg_fps = total_fps / frame_count
+print(f"Average FPS: {avg_fps:.3f}")
