@@ -22,7 +22,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 # read image from disk
-image = Image.open(args['i'])
+try:
+    image = Image.open(args['i'])
+except AttributeError:
+    print('Wrong input arguments, need path to image file.')
+    exit()
 # execute forward pass with model
 outputs = segmentation_utils.get_segmentation_labels(image, model, device)
 outputs = outputs['out']
